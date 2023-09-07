@@ -1,0 +1,11 @@
+{
+  "$schema": "https://deno.land/x/deno@v1.36.4/cli/schemas/config-file.v1.json",
+  "tasks": {
+    "query": "deno run --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts",
+    "installer": "deno install -f --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai"
+  },
+  "fmt": {
+    "lineWidth": 120,
+    "indentWidth": 4
+  }
+}
