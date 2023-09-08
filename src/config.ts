@@ -3,64 +3,66 @@ import * as path from "https://deno.land/std@0.201.0/path/mod.ts";
 import { fromFileUrl } from "https://deno.land/std@0.201.0/path/mod.ts";
 
 export const modelSchema = z.object({
-    alias: z.string(),
-    name: z.string(),
-    template: z.string().includes("{{input}}", { message: "Your prompt template must contain the {{input}} matcher!" }),
-    max_new_tokens: z.number().min(100),
-    max_query_time: z.number().min(5).max(120),
+  alias: z.string(),
+  name: z.string(),
+  template: z.string().includes("{{input}}", {
+    message: "Your prompt template must contain the {{input}} matcher!",
+  }),
+  max_new_tokens: z.number().min(100),
+  max_query_time: z.number().min(5).max(120),
 }).optional();
 
 export type Model = z.infer<typeof modelSchema>;
 
 export const configSchema = z.object({
-    model: z.array(modelSchema).optional(),
+  model: z.array(modelSchema).optional(),
 
-    options: z.object({
-        default: z.string().optional(),
-        markdown: z.boolean().default(false),
-    }),
+  options: z.object({
+    default: z.string().optional(),
+    markdown: z.boolean().default(false),
+  }),
 });
 
 export type ClaiConfig = z.infer<typeof configSchema>;
 
 export async function fileExists(
-    filepath: string,
+  filepath: string,
 ): Promise<boolean> {
-    try {
-        const _file = await Deno.stat(filepath);
+  try {
+    const _file = await Deno.stat(filepath);
 
-        return true;
-    } catch (e) {
-        if (e instanceof Deno.errors.NotFound) {
-            await Deno.mkdir(path.dirname(filepath), {
-                recursive: true,
-            });
-            await Deno.writeTextFile(
-                filepath,
-                "[options]\n\nmarkdown=false",
-            );
-        }
+    return true;
+  } catch (e) {
+    if (e instanceof Deno.errors.NotFound) {
+      await Deno.mkdir(path.dirname(filepath), {
+        recursive: true,
+      });
+      await Deno.writeTextFile(
+        filepath,
+        "[options]\n\nmarkdown=false",
+      );
     }
-    return false;
+  }
+  return false;
 }
 
 export function parseTomlConfig(path: string): ClaiConfig {
-    let toml_data: Record<string, unknown>;
-    let config: ClaiConfig;
-    try {
-        toml_data = parse(Deno.readTextFileSync(path));
-    } catch (e) {
-        console.log(e);
-        throw new Error("Failed to parse config file");
-    }
-    try {
-        config = configSchema.parse(toml_data);
-    } catch (e) {
-        console.log(e);
-        throw new Error("Failed to validate config file");
-    }
-    return config;
+  let toml_data: Record<string, unknown>;
+  let config: ClaiConfig;
+  try {
+    toml_data = parse(Deno.readTextFileSync(path));
+  } catch (e) {
+    console.log(e);
+    throw new Error("Failed to parse config file");
+  }
+  try {
+    config = configSchema.parse(toml_data);
+  } catch (e) {
+    console.log(e);
+    throw new Error("Failed to validate config file");
+  }
+  return config;
 }
 export const CONFIG_PATH = fromFileUrl(
-    `file://${Deno.env.get("HOME")}/.config/clai/config.toml`,
+  `file://${Deno.env.get("HOME")}/.config/clai/config.toml`,
 );
