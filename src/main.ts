@@ -2,14 +2,13 @@ import {
   colors,
   Command,
   HfInference,
-  log,
   parseTomlConfig,
-  tty,
+  runInference,
+  runInferenceStream,
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { runInference, runInferenceStream } from "../deps.ts";
-import { forPromise } from "./spinners.ts";
+import { withSpinner } from "./spinners.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
 if (import.meta.main) {
@@ -45,21 +44,31 @@ if (import.meta.main) {
         { model, tokens, time, debug, md },
         query: string,
       ) => {
+        // Inference client
         const hf = new HfInference(API_TOKEN);
+
+        //Check config
         await fileExists(CONFIG_PATH);
+
+        // Parse said config.
         const config = parseTomlConfig(CONFIG_PATH);
         if (debug) {
           console.log(config);
         }
+
+        //Select model based on config and flags.
         // @ts-ignore Just do it.
-        let selected_model = selectModel(config, model, tokens, time, debug);
+        const selected_model = selectModel(config, model, tokens, time, debug);
+
+        // Switch on Markdown flag and run inference.
         if (md) {
-          await forPromise(runInference, {
+          // withSpinner wraps the runInference call in a spinner.
+          await withSpinner(runInference, {
             input: query,
             client: hf,
             model: selected_model,
           }, {
-            color: colors.bold.green,
+            color: colors.bold.brightGreen,
             textColor: colors.bold.white,
             text: "Generating...",
           });

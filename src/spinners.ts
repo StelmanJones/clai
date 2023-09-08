@@ -304,8 +304,8 @@ export default class CrayonSpinner {
 /**
  * Starts a spinner for a promise
  */
-// deno-lint-ignore ban-types
-export const forPromise = async (
+export const withSpinner = async (
+  // deno-lint-ignore ban-types
   action: Function,
   args: {
     input: string;

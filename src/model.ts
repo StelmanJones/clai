@@ -1,4 +1,4 @@
-import { ClaiConfig, Model, modelSchema } from "../deps.ts";
+import { ClaiConfig, Model } from "../deps.ts";
 
 export function selectModel(
   config: ClaiConfig,

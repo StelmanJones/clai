@@ -1,8 +1,4 @@
-import { colors, HfInference, log, parseTomlConfig, tty } from "../deps.ts";
-import { CONFIG_PATH, fileExists } from "./config.ts";
-import { selectModel } from "./model.ts";
-
-const FALCON_STOP_SEQUENCES = ["\nUser:", "<|endoftext|>", " User:", "###"];
+import { colors, HfInference, tty } from "../deps.ts";
 
 export async function runInferenceStream(
   input: string,
