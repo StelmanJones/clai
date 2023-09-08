@@ -1,17 +1,19 @@
 import { parse, z } from "../deps.ts";
 import * as path from "https://deno.land/std@0.201.0/path/mod.ts";
 import { fromFileUrl } from "https://deno.land/std@0.201.0/path/mod.ts";
+
+export const modelSchema = z.object({
+    alias: z.string(),
+    name: z.string(),
+    template: z.string().includes("{{input}}", { message: "Your prompt template must contain the {{input}} matcher!" }),
+    max_new_tokens: z.number().min(100),
+    max_query_time: z.number().min(5).max(120),
+}).optional();
+
+export type Model = z.infer<typeof modelSchema>;
+
 export const configSchema = z.object({
-    model: z.array(
-        z.object({
-            alias: z.string(),
-            name: z.string(),
-            prefix: z.string(),
-            suffix: z.string(),
-            max_new_tokens: z.number().min(100).default(1000),
-            max_query_time: z.number().min(5).max(120).default(30),
-        }).optional(),
-    ).optional(),
+    model: z.array(modelSchema).optional(),
 
     options: z.object({
         default: z.string().optional(),
@@ -21,15 +23,22 @@ export const configSchema = z.object({
 
 export type ClaiConfig = z.infer<typeof configSchema>;
 
-export async function fileExists(filepath: string): Promise<boolean> {
+export async function fileExists(
+    filepath: string,
+): Promise<boolean> {
     try {
         const _file = await Deno.stat(filepath);
 
         return true;
     } catch (e) {
         if (e instanceof Deno.errors.NotFound) {
-            await Deno.mkdir(path.dirname(filepath), { recursive: true });
-            await Deno.writeTextFile(filepath, "[options]\n\nmarkdown=false");
+            await Deno.mkdir(path.dirname(filepath), {
+                recursive: true,
+            });
+            await Deno.writeTextFile(
+                filepath,
+                "[options]\n\nmarkdown=false",
+            );
         }
     }
     return false;

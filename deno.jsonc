@@ -5,7 +5,10 @@
     "installer": "deno install -f --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai"
   },
   "fmt": {
-    "lineWidth": 120,
-    "indentWidth": 4
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "useTabs": false,
+    "semiColons": true,
+    "singleQuote": false
   }
 }
