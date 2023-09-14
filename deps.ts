@@ -15,5 +15,5 @@ export {
 export * as log from "https://deno.land/std/log/mod.ts";
 export { CONFIG_PATH, fileExists } from "./src/config.ts";
 export { runInference, runInferenceStream } from "./src/inference.ts";
-
+export { mergeReadableStreams } from "https://deno.land/std/streams/merge_readable_streams.ts";
 export { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";

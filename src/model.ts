@@ -38,3 +38,54 @@ export function selectModel(
   }
   return selected_model;
 }
+
+export function getModelParent(task_name: string): string[] {
+  let parents: string[]
+  if (task_name == "text2text-generation") {
+    
+    parents = [
+          
+      'google',
+      "facebook",
+      "microsoft",
+      "langboat",
+      "bloom",
+      "allenai",
+      "mbzuai",
+      "lmsys",
+      "starmpcc",
+      "haining",
+      "kaludi"
+    ]
+  }
+    else {
+      parents = [
+        'google',
+        "facebook",
+        "microsoft",
+        "langboat",
+        "databricks",
+        "aisquared",
+        "bloom",
+        "allenai",
+        "tiiuae",
+        "openlm",
+        "stabilityai",
+        "eleutherai",
+        "mbzuai",
+        "cerebras",
+        "open_assistant",
+        "nomic_ai",
+        "blinkdl",
+        "lmsys",
+        "together_computer",
+        "mosaic_ml",
+        "h20ai",
+      ]
+    }
+    return parents
+  }
+
+export function getText2TextModel(m: string) {
+
+}

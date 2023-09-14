@@ -1,5 +1,5 @@
 import { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { colors, HfInference } from "../deps.ts";
+import { colors, HfInference,  tty } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
 export interface Spinner {
   interval: number;
@@ -25,6 +25,12 @@ export type Chainable<T, E extends keyof T | null = null> = {
 };
 
 type ExcludedColorMethods = "setColorEnabled" | "getColorEnabled";
+
+const glowCmd = new Deno.Command("glow", {
+  stderr: "piped",
+  stdin: "piped",
+  stdout: "piped",
+});
 
 // Terminal escape sequences
 const ESC = "\x1b[";
@@ -63,6 +69,7 @@ export function showCursor(writer: Deno.WriterSync, encoder: TextEncoder) {
 }
 export interface Options {
   text: string;
+  textIndex: number;
   color:
     & Chainable<typeof stdColors, ExcludedColorMethods>
     & ((str: string) => string);
@@ -81,6 +88,7 @@ type InputOptions = Partial<Options>;
 export default class CrayonSpinner {
   private options: Options = {
     text: "",
+    textIndex: 0,
     color: colors.white,
     spinner: Deno.build.os === "windows" ? spinners.windows : spinners.dots,
     textColor: colors.white,
@@ -286,7 +294,12 @@ export default class CrayonSpinner {
    * Renders each frame of the spinner
    */
   private render() {
+    const textLength = this.options.text.length;
+    if (this.options.textIndex === textLength - 1) this.options.textIndex = 0;
+    else this.options.textIndex += 1;
     clearLine(this.options.writer, this.textEncoder);
+
+    tty.eraseLine();
 
     writeLine(
       this.options.writer,
@@ -295,7 +308,17 @@ export default class CrayonSpinner {
         this.options.color(
           this.options.spinner.frames[this.currentFrame],
         )
-      } ${this.options.textColor(this.options.text)}`,
+      } ${
+        this.options.textColor(
+          this.options.text.slice(0, this.options.textIndex) +
+            colors.magenta(
+              this.options.text[this.options.textIndex],
+            ) +
+            this.options.textColor(
+              this.options.text.slice(this.options.textIndex + 1),
+            ),
+        )
+      }`,
       this.options.indent,
     );
   }
@@ -325,11 +348,52 @@ export const withSpinner = async (
   await (async () => {
     try {
       const res = await action(args.input, args.client, args.model);
+
+      tty.clearTerminal();
       spinner.succeed(res);
     } catch (e) {
       spinner.fail(e);
     }
   })();
+  tty.clearTerminal();
 
   return spinner;
 };
+
+/*
+export const pipeToGlow = async (
+  // deno-lint-ignore ban-types
+  action: Function,
+  args: {
+    input: string;
+    client: HfInference;
+    model: {
+      alias: string;
+      name: string;
+      max_new_tokens: number;
+      max_query_time: number;
+      template: string;
+    };
+  },
+  options: InputOptions,
+) => {
+  const spinner = new CrayonSpinner(options).start();
+
+  await (async () => {
+    try {
+
+
+      const res = await action(args.input, args.client, args.model);
+      tty.clearTerminal()
+      spinner.succeed(res)
+      const glow = await new Deno.Command("echo",{args:[`"${res}"`,"|","glow","-"]}).output()
+      console.log(glow.success)
+    } catch (e) {
+      spinner.fail(e);
+    }
+  })();
+
+
+  return spinner;
+};
+ */

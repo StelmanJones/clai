@@ -5,6 +5,7 @@ import {
   parseTomlConfig,
   runInference,
   runInferenceStream,
+  tty,
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
@@ -20,6 +21,12 @@ if (import.meta.main) {
         colors.brightMagenta(colors.bold("StelmanJones"))
       }. ${colors.bold(colors.dim("(https://github.com/StelmanJones)"))}`,
     )
+    /*.option(
+      "-g, --glow",
+      `Pipe the output to glow ${
+        colors.dim.bold("(https://github.com/charmbracelet/glow)")
+      }`,
+    ) */
     .option(
       "-m, --model [model:string]",
       "Specify which model to use.",
@@ -30,7 +37,7 @@ if (import.meta.main) {
     )
     .option(
       "--time [time:integer]",
-      "The max amount of time generating a query.",
+      "The max amount of time generating a response.",
     )
     .option("-d, --debug", "Print debug info and quit.")
     .option("--md", "Format the response as Markdown.")
@@ -38,11 +45,11 @@ if (import.meta.main) {
       "HUGGING=<token:string>",
       "Used to authenticate your inferance requests. You can get your API token at https://huggingface.co/settings/tokens",
     )
-    .arguments("<query:string>")
+    .arguments("<input:string>")
     .action(
       async (
-        { model, tokens, time, debug, md },
-        query: string,
+        { model, tokens, time, debug, md, glow },
+        input: string,
       ) => {
         // Inference client
         const hf = new HfInference(API_TOKEN);
@@ -60,11 +67,24 @@ if (import.meta.main) {
         // @ts-ignore Just do it.
         const selected_model = selectModel(config, model, tokens, time, debug);
 
+        /*
+        if(glow){
+          await pipeToGlow(runInference, {
+            input: query,
+            client: hf,
+            model: selected_model,
+          }, {
+            color: colors.bold.brightGreen,
+            textColor: colors.bold.white,
+            text: "Generating...",
+          })
+        }
+        */
         // Switch on Markdown flag and run inference.
         if (md) {
           // withSpinner wraps the runInference call in a spinner.
           await withSpinner(runInference, {
-            input: query,
+            input,
             client: hf,
             model: selected_model,
           }, {
@@ -74,7 +94,7 @@ if (import.meta.main) {
           });
         } else {
           await runInferenceStream(
-            query,
+            input,
             hf,
             selected_model,
           );
