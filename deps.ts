@@ -17,3 +17,4 @@ export { CONFIG_PATH, fileExists } from "./src/config.ts";
 export { runInference, runInferenceStream } from "./src/inference.ts";
 export { mergeReadableStreams } from "https://deno.land/std/streams/merge_readable_streams.ts";
 export { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";
+export * as ui from "https://deno.land/x/tui@2.1.3/mod.ts";

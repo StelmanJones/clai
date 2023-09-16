@@ -3,6 +3,8 @@
   "tasks": {
     "query": "deno run --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts",
     "installer": "deno install -f --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
+
+    "tui": "deno run --allow-env --allow-net --allow-read --allow-write --unstable ./src/tui.ts",
     "benchmark": "deno bench --allow-env --allow-net --allow-read --allow-write --unstable ./src/*.bench.ts"
   },
   "fmt": {

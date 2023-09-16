@@ -48,7 +48,7 @@ if (import.meta.main) {
     .arguments("<input:string>")
     .action(
       async (
-        { model, tokens, time, debug, md, glow },
+        { model, tokens, time, debug, md },
         input: string,
       ) => {
         // Inference client
