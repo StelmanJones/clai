@@ -1,15 +1,16 @@
 import {
+  claiTheme,
   colors,
   Command,
   HfInference,
   parseTomlConfig,
   runInference,
   runInferenceStream,
-  tty,
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
 import { withSpinner } from "./spinners.ts";
+import { configCmd } from "./subcommands.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
 if (import.meta.main) {
@@ -18,8 +19,8 @@ if (import.meta.main) {
     .version("1.0.0")
     .description(
       `Huggingface AI on the command line! \n\nMade by ${
-        colors.brightMagenta(colors.bold("StelmanJones"))
-      }. ${colors.bold(colors.dim("(https://github.com/StelmanJones)"))}`,
+        claiTheme.highlight("StelmanJones")
+      }. ${claiTheme.dimmed("(https://github.com/StelmanJones)")}`,
     )
     /*.option(
       "-g, --glow",
@@ -101,5 +102,6 @@ if (import.meta.main) {
         }
       },
     )
+    .command("config", configCmd)
     .parse(Deno.args);
 }
