@@ -12,9 +12,12 @@ export {
   modelSchema,
   parseTomlConfig,
 } from "./src/config.ts";
-export * as log from "https://deno.land/std/log/mod.ts";
+export * as log from "https://deno.land/std@0.201.0/log/mod.ts";
 export { CONFIG_PATH, fileExists } from "./src/config.ts";
 export { runInference, runInferenceStream } from "./src/inference.ts";
 export { mergeReadableStreams } from "https://deno.land/std/streams/merge_readable_streams.ts";
 export { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";
 export * as ui from "https://deno.land/x/tui@2.1.3/mod.ts";
+export { Table } from "https://deno.land/x/cliffy@v1.0.0-rc.3/table/mod.ts";
+export { claiArt, claiTheme } from "./src/theme.ts";
+export * as tea from "https://deno.land/x/libtea@v0.13/mod.ts"

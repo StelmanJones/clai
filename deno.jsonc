@@ -2,9 +2,9 @@
   "$schema": "https://deno.land/x/deno@v1.36.4/cli/schemas/config-file.v1.json",
   "tasks": {
     "query": "deno run --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts",
-    "installer": "deno install -f --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
+    "installer": "deno fmt && deno install -f --allow-env --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
 
-    "tui": "deno run --allow-env --allow-net --allow-read --allow-write --unstable ./src/tui.ts",
+    "theme": "deno fmt && deno run --allow-env --allow-net --allow-read --allow-write --unstable ./src/theme.ts",
     "benchmark": "deno bench --allow-env --allow-net --allow-read --allow-write --unstable ./src/*.bench.ts"
   },
   "fmt": {

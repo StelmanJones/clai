@@ -237,6 +237,7 @@
     "specifiers": {
       "@huggingface/inference": "@huggingface/inference@2.6.1",
       "@ts-stack/markdown": "@ts-stack/markdown@1.5.0",
+      "@types/node": "@types/node@18.16.19",
       "marked": "marked@5.1.2",
       "marked-terminal": "marked-terminal@5.2.0_marked@5.1.2",
       "zod": "zod@3.22.2"
@@ -255,6 +256,10 @@
         "dependencies": {
           "tslib": "tslib@2.6.2"
         }
+      },
+      "@types/node@18.16.19": {
+        "integrity": "sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==",
+        "dependencies": {}
       },
       "ansi-escapes@6.2.0": {
         "integrity": "sha512-kzRaCqXnpzWs+3z5ABPQiVke+iq0KXkHo8xiWV4RPTi5Yli0l97BEQuhXV1s7+aSU/fu1kUuxgS4MsQ0fRuygw==",
