@@ -8,7 +8,7 @@ export function selectModel(
   debug?: boolean,
 ) {
   let selected_model: Model = {
-    alias: "llam",
+    alias: "llama",
     name: "meta-llama/Llama-2-70b-chat-hf",
     template: "[INST] {{input}} [/INST]",
     max_new_tokens: 2000,
