@@ -1,5 +1,5 @@
 import { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { colors, HfInference,  tty } from "../deps.ts";
+import { colors, HfInference, tty } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
 export interface Spinner {
   interval: number;
