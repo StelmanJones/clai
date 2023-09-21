@@ -1,7 +1,16 @@
-import { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { colors, HfInference, tty } from "../deps.ts";
+import {
+  readAll,
+  writeAll,
+  writeAllSync,
+  writerFromStreamWriter,
+} from "https://deno.land/std@0.122.0/streams/conversion.ts";
+import { colors, HfInference, porcelain, tty } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
-export interface Spinner {
+import { pipeThrough } from "./pipe.ts";
+import { StringReader } from "https://deno.land/std@0.202.0/io/string_reader.ts";
+import { Buffer } from "https://deno.land/std@0.122.0/io/buffer.ts";
+
+export interface SpinnerInterface {
   interval: number;
   frames: string[];
 }
@@ -77,7 +86,7 @@ export interface Options {
   textColor:
     & Chainable<typeof stdColors, ExcludedColorMethods>
     & ((str: string) => string);
-  spinner: Spinner;
+  spinner: SpinnerInterface;
   prefixText: string;
   indent: number;
   cursor: boolean;
@@ -85,7 +94,7 @@ export interface Options {
 }
 type InputOptions = Partial<Options>;
 
-export default class CrayonSpinner {
+export default class Spinner {
   private options: Options = {
     text: "",
     textIndex: 0,
@@ -343,7 +352,7 @@ export const withSpinner = async (
   },
   options: InputOptions,
 ) => {
-  const spinner = new CrayonSpinner(options).start();
+  const spinner = new Spinner(options).start();
 
   await (async () => {
     try {
@@ -360,7 +369,6 @@ export const withSpinner = async (
   return spinner;
 };
 
-/*
 export const pipeToGlow = async (
   // deno-lint-ignore ban-types
   action: Function,
@@ -377,23 +385,28 @@ export const pipeToGlow = async (
   },
   options: InputOptions,
 ) => {
-  const spinner = new CrayonSpinner(options).start();
+  const spinner = new Spinner(options).start();
 
   await (async () => {
     try {
-
-
       const res = await action(args.input, args.client, args.model);
-      tty.clearTerminal()
-      spinner.succeed(res)
-      const glow = await new Deno.Command("echo",{args:[`"${res}"`,"|","glow","-"]}).output()
-      console.log(glow.success)
+      spinner.stop();
+      const { run } = porcelain;
+      await run("go install github.com/charmbracelet/glow@latest");
+      const process = new Deno.Command("glow", {
+        args: ["-"],
+        stdin: "piped",
+        stdout: "inherit",
+      }).spawn();
+      const writer = await process.stdin.getWriter();
+      writer.write(new TextEncoder().encode(res));
+      writer.releaseLock();
+      await process.stdin.close();
+      await process.output();
     } catch (e) {
       spinner.fail(e);
     }
   })();
 
-
   return spinner;
 };
- */

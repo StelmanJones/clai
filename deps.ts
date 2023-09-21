@@ -20,4 +20,8 @@ export { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.t
 export * as ui from "https://deno.land/x/tui@2.1.3/mod.ts";
 export { Table } from "https://deno.land/x/cliffy@v1.0.0-rc.3/table/mod.ts";
 export { claiArt, claiTheme } from "./src/theme.ts";
-export * as tea from "https://deno.land/x/libtea@v0.13/mod.ts"
+export {
+  plumbing,
+  porcelain,
+  utils,
+} from "https://deno.land/x/libtea@v0.13/mod.ts";
