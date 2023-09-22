@@ -4,6 +4,7 @@ import {
 import { colors, HfInference, porcelain, tty } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
 import { glitch } from "./theme.ts";
+import { rgb24 } from "https://deno.land/std@0.202.0/fmt/colors.ts";
 
 export interface SpinnerInterface {
   interval: number;
@@ -28,7 +29,7 @@ export type Chainable<T, E extends keyof T | null = null> = {
   [P in keyof T]: P extends E ? T[P] : Chainable<T, E> & T[P];
 };
 
-type ExcludedColorMethods = "setColorEnabled" | "getColorEnabled";
+export type ExcludedColorMethods = "setColorEnabled" | "getColorEnabled";
 
 // Terminal escape sequences
 const ESC = "\x1b[";
@@ -298,7 +299,6 @@ export default class Spinner {
     };
     if (this.dotCount === 6) this.dotCount = 1;
     else this.dotCount++;
-
     writeLine(
       this.options.writer,
       this.textEncoder,
@@ -306,7 +306,11 @@ export default class Spinner {
         this.options.color(
           this.options.spinner.frames[this.currentFrame],
         ) +
-        colors.magenta.bold((glitch(this.options.text) + dots(this.dotCount))),
+        colors.dim.bold(
+          " " +
+            glitch(this.options.text) +
+            dots(this.dotCount),
+        ),
       this.options.indent,
     );
   }
@@ -337,13 +341,11 @@ export const withSpinner = async (
     try {
       const res = await action(args.input, args.client, args.model);
 
-      tty.clearTerminal();
       spinner.succeed(res);
     } catch (e) {
       spinner.fail(e);
     }
   })();
-  tty.clearTerminal();
 
   return spinner;
 };
@@ -373,10 +375,9 @@ export const pipeToGlow = async (
       // Use Tea to install Glow for markdown rendering.
       const { run } = porcelain;
       try {
-
-      await run("go install github.com/charmbracelet/glow@latest");
+        await run("go install github.com/charmbracelet/glow@latest");
       } catch (e) {
-        spinner.fail(e)
+        spinner.fail(e);
       }
 
       //Spawn Glow subprocess.
@@ -385,8 +386,8 @@ export const pipeToGlow = async (
         stdin: "piped",
         stdout: "inherit",
       }).spawn();
-      spinner.stop();
 
+      spinner.stop();
       // Collect glow output.
       const writer = await process.stdin.getWriter();
       writer.write(new TextEncoder().encode(res));

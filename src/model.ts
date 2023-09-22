@@ -82,6 +82,3 @@ export function getModelParent(task_name: string): string[] {
   }
   return parents;
 }
-
-export function getText2TextModel(m: string) {
-}

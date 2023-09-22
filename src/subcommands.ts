@@ -7,23 +7,15 @@ import {
   parseTomlConfig,
 } from "../deps.ts";
 import { Table } from "../deps.ts";
-import { ansi } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/mod.ts";
 import { Row } from "https://deno.land/x/cliffy@v1.0.0-rc.3/table/row.ts";
-
-const CONFIG_IMAGE =
-  "https://storage.cloud.google.com/stelmanjonescdn/clai/config.png?authuser=3";
 
 const showConfigCmd = new Command()
   .name("show")
   .description("List your options and configurated models.")
   .action(async () => {
-    const config_img = await fetch(CONFIG_IMAGE);
-    const img_buffer: ArrayBuffer = await config_img.arrayBuffer();
-
     await fileExists(CONFIG_PATH);
     const config: ClaiConfig = parseTomlConfig(CONFIG_PATH);
-    console.log(ansi.image(img_buffer));
-    let _ = new Table()
+    const _ = new Table()
       .header(Row.from(["Default", "Markdown"]))
       .body([[
         config.options.default || "",
@@ -48,7 +40,7 @@ const showConfigCmd = new Command()
       }
     }
 
-    let _models = new Table()
+    const _models = new Table()
       .header(
         Row.from([
           colors.bold("Name"),

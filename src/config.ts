@@ -14,7 +14,7 @@ export const modelSchema = z.object({
 
 export type Model = z.infer<typeof modelSchema>;
 
-export const configSchema = z.object({
+const configSchema = z.object({
   model: z.array(modelSchema).optional(),
 
   options: z.object({

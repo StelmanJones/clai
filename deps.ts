@@ -7,7 +7,6 @@ export { snapshotTest } from "https://deno.land/x/cliffy@v1.0.0-rc.3/testing/mod
 export { z } from "npm:zod";
 export {
   type ClaiConfig,
-  configSchema,
   type Model,
   modelSchema,
   parseTomlConfig,
@@ -19,12 +18,9 @@ export { mergeReadableStreams } from "https://deno.land/std/streams/merge_readab
 export { writeAllSync } from "https://deno.land/std@0.122.0/streams/conversion.ts";
 export * as ui from "https://deno.land/x/tui@2.1.3/mod.ts";
 export { Table } from "https://deno.land/x/cliffy@v1.0.0-rc.3/table/mod.ts";
-export { claiArt, claiTheme } from "./src/theme.ts";
+export { claiTheme } from "./src/theme.ts";
 export {
   plumbing,
   porcelain,
   utils,
 } from "https://deno.land/x/libtea@v0.13/mod.ts";
-
-// @deno-types=npm:@types/chalk-animation
-export * as chalk from "npm:chalk-animation";

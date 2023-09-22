@@ -9,7 +9,7 @@ import {
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { pipeToGlow, withSpinner } from "./spinners.ts";
+import { pipeToGlow, spinners, withSpinner } from "./spinners.ts";
 import { configCmd } from "./subcommands.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
@@ -74,8 +74,8 @@ if (import.meta.main) {
             client: hf,
             model: selected_model,
           }, {
-            color: colors.bold.magenta,
-            textColor: colors.bold.white,
+            color: colors.bold.green,
+            textColor: colors.white,
             text: "Generating",
           });
         } // Switch on Markdown flag and run inference.
@@ -87,7 +87,7 @@ if (import.meta.main) {
             model: selected_model,
           }, {
             color: colors.bold.brightGreen,
-            textColor: colors.bold.white,
+            textColor: colors.white,
             text: "Generating",
           });
         } else {
