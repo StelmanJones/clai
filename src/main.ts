@@ -16,7 +16,7 @@ const API_TOKEN = Deno.env.get("HUGGING");
 if (import.meta.main) {
   await new Command()
     .name("CLAI")
-    .version("1.0.0")
+    .version("1.2.0")
     .description(
       `Huggingface AI on the command line! \n\nMade by ${
         claiTheme.highlight("StelmanJones")
