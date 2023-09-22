@@ -4,10 +4,7 @@ import {
 import { colors, HfInference, porcelain, tty } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
 import { glitch } from "./theme.ts";
-import { rgb24 } from "https://deno.land/std@0.196.0/fmt/colors.ts";
 
-const TEXT = "Generating";
-const GRADIENT_INDEX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 export interface SpinnerInterface {
   interval: number;
   frames: string[];
@@ -97,7 +94,7 @@ export default class Spinner {
     writer: Deno.stdout,
   };
   private dotCount = 1;
-  private dots = ".";
+  //deno-lint-ignore no-explicit-any
   private timeoutRef: any;
   private spinning = false;
   private currentFrame = 0;
@@ -294,7 +291,6 @@ export default class Spinner {
    */
   private render() {
     clearLine(this.options.writer, this.textEncoder);
-    GRADIENT_INDEX.push(GRADIENT_INDEX.shift()!);
     const dots = (count: number) => {
       if (count <= 2) return ".";
       else if (count <= 4) return "..";
@@ -373,14 +369,25 @@ export const pipeToGlow = async (
   await (async () => {
     try {
       const res = await action(args.input, args.client, args.model);
-      spinner.stop();
+
+      // Use Tea to install Glow for markdown rendering.
       const { run } = porcelain;
+      try {
+
       await run("go install github.com/charmbracelet/glow@latest");
+      } catch (e) {
+        spinner.fail(e)
+      }
+
+      //Spawn Glow subprocess.
       const process = new Deno.Command("glow", {
         args: ["-"],
         stdin: "piped",
         stdout: "inherit",
       }).spawn();
+      spinner.stop();
+
+      // Collect glow output.
       const writer = await process.stdin.getWriter();
       writer.write(new TextEncoder().encode(res));
       writer.releaseLock();

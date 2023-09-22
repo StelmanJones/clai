@@ -1,6 +1,4 @@
 import { colors } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts";
-import { z } from "../deps.ts";
-import { rgb24 } from "https://deno.land/std@0.196.0/fmt/colors.ts";
 import { random } from "https://deno.land/x/lodash_es@v0.0.2/mod.ts";
 const highlight = colors.bold.brightMagenta;
 const dimmed = colors.bold.dim;
@@ -26,7 +24,7 @@ export function glitch(text: string) {
     chunks.push(text.substring(i, i + skip).replace(/[^\r\n]/g, " "));
     i += skip;
     if (text[i]) {
-      if (text[i] !== "\n" && text[i] !== "\r" && Math.random() > 0.992) {
+      if (text[i] !== "\n" && text[i] !== "\r" && Math.random() > 0.990) {
         const effect = () => {
           let char =
             glitchChars[Math.floor(Math.random() * glitchChars.length)];
@@ -83,25 +81,4 @@ console.log(warn("TEST"));
 console.log(error("TEST"));
 */
 
-const modelArt = `
-███╗░░░███╗░█████╗░██████╗░███████╗██╗░░░░░░██████╗
-████╗░████║██╔══██╗██╔══██╗██╔════╝██║░░░░░██╔════╝
-██╔████╔██║██║░░██║██║░░██║█████╗░░██║░░░░░╚█████╗░
-██║╚██╔╝██║██║░░██║██║░░██║██╔══╝░░██║░░░░░░╚═══██╗
-██║░╚═╝░██║╚█████╔╝██████╔╝███████╗███████╗██████╔╝
-╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚══════╝╚══════╝╚═════╝░
-`;
 
-const configArt = `
-░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░
-██╔══██╗██╔══██╗████╗░██║██╔════╝██║██╔════╝░
-██║░░╚═╝██║░░██║██╔██╗██║█████╗░░██║██║░░██╗░
-██║░░██╗██║░░██║██║╚████║██╔══╝░░██║██║░░╚██╗
-╚█████╔╝╚█████╔╝██║░╚███║██║░░░░░██║╚██████╔╝
-░╚════╝░░╚════╝░╚═╝░░╚══╝╚═╝░░░░░╚═╝░╚═════╝░
-`;
-
-export const claiArt = {
-  modelArt,
-  configArt,
-};
