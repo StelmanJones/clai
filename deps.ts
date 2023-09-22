@@ -25,3 +25,6 @@ export {
   porcelain,
   utils,
 } from "https://deno.land/x/libtea@v0.13/mod.ts";
+
+// @deno-types=npm:@types/chalk-animation
+export * as chalk from "npm:chalk-animation";

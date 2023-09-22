@@ -1,15 +1,13 @@
 import {
-  readAll,
-  writeAll,
   writeAllSync,
-  writerFromStreamWriter,
 } from "https://deno.land/std@0.122.0/streams/conversion.ts";
 import { colors, HfInference, porcelain, tty } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
-import { pipeThrough } from "./pipe.ts";
-import { StringReader } from "https://deno.land/std@0.202.0/io/string_reader.ts";
-import { Buffer } from "https://deno.land/std@0.122.0/io/buffer.ts";
+import { glitch } from "./theme.ts";
+import { rgb24 } from "https://deno.land/std@0.196.0/fmt/colors.ts";
 
+const TEXT = "Generating";
+const GRADIENT_INDEX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 export interface SpinnerInterface {
   interval: number;
   frames: string[];
@@ -34,12 +32,6 @@ export type Chainable<T, E extends keyof T | null = null> = {
 };
 
 type ExcludedColorMethods = "setColorEnabled" | "getColorEnabled";
-
-const glowCmd = new Deno.Command("glow", {
-  stderr: "piped",
-  stdin: "piped",
-  stdout: "piped",
-});
 
 // Terminal escape sequences
 const ESC = "\x1b[";
@@ -78,7 +70,6 @@ export function showCursor(writer: Deno.WriterSync, encoder: TextEncoder) {
 }
 export interface Options {
   text: string;
-  textIndex: number;
   color:
     & Chainable<typeof stdColors, ExcludedColorMethods>
     & ((str: string) => string);
@@ -97,7 +88,6 @@ type InputOptions = Partial<Options>;
 export default class Spinner {
   private options: Options = {
     text: "",
-    textIndex: 0,
     color: colors.white,
     spinner: Deno.build.os === "windows" ? spinners.windows : spinners.dots,
     textColor: colors.white,
@@ -106,8 +96,8 @@ export default class Spinner {
     cursor: false,
     writer: Deno.stdout,
   };
-
-  // deno-lint-ignore no-explicit-any
+  private dotCount = 1;
+  private dots = ".";
   private timeoutRef: any;
   private spinning = false;
   private currentFrame = 0;
@@ -303,31 +293,24 @@ export default class Spinner {
    * Renders each frame of the spinner
    */
   private render() {
-    const textLength = this.options.text.length;
-    if (this.options.textIndex === textLength - 1) this.options.textIndex = 0;
-    else this.options.textIndex += 1;
     clearLine(this.options.writer, this.textEncoder);
-
-    tty.eraseLine();
+    GRADIENT_INDEX.push(GRADIENT_INDEX.shift()!);
+    const dots = (count: number) => {
+      if (count <= 2) return ".";
+      else if (count <= 4) return "..";
+      else return "...";
+    };
+    if (this.dotCount === 6) this.dotCount = 1;
+    else this.dotCount++;
 
     writeLine(
       this.options.writer,
       this.textEncoder,
-      `${this.options.prefixText}${
+      this.options.prefixText +
         this.options.color(
           this.options.spinner.frames[this.currentFrame],
-        )
-      } ${
-        this.options.textColor(
-          this.options.text.slice(0, this.options.textIndex) +
-            colors.magenta(
-              this.options.text[this.options.textIndex],
-            ) +
-            this.options.textColor(
-              this.options.text.slice(this.options.textIndex + 1),
-            ),
-        )
-      }`,
+        ) +
+        colors.magenta.bold((glitch(this.options.text) + dots(this.dotCount))),
       this.options.indent,
     );
   }

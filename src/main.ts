@@ -9,7 +9,7 @@ import {
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { withSpinner } from "./spinners.ts";
+import { pipeToGlow, withSpinner } from "./spinners.ts";
 import { configCmd } from "./subcommands.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
@@ -22,12 +22,12 @@ if (import.meta.main) {
         claiTheme.highlight("StelmanJones")
       }. ${claiTheme.dimmed("(https://github.com/StelmanJones)")}`,
     )
-    /*.option(
+    .option(
       "-g, --glow",
       `Pipe the output to glow ${
         colors.dim.bold("(https://github.com/charmbracelet/glow)")
       }`,
-    ) */
+    )
     .option(
       "-m, --model [model:string]",
       "Specify which model to use.",
@@ -49,7 +49,7 @@ if (import.meta.main) {
     .arguments("<input:string>")
     .action(
       async (
-        { model, tokens, time, debug, md },
+        { model, tokens, time, debug, md, glow },
         input: string,
       ) => {
         // Inference client
@@ -68,21 +68,18 @@ if (import.meta.main) {
         // @ts-ignore Just do it.
         const selected_model = selectModel(config, model, tokens, time, debug);
 
-        /*
-        if(glow){
+        if (glow) {
           await pipeToGlow(runInference, {
-            input: query,
+            input,
             client: hf,
             model: selected_model,
           }, {
-            color: colors.bold.brightGreen,
+            color: colors.bold.magenta,
             textColor: colors.bold.white,
-            text: "Generating...",
-          })
-        }
-        */
-        // Switch on Markdown flag and run inference.
-        if (md) {
+            text: "Generating",
+          });
+        } // Switch on Markdown flag and run inference.
+        else if (md) {
           // withSpinner wraps the runInference call in a spinner.
           await withSpinner(runInference, {
             input,
@@ -91,7 +88,7 @@ if (import.meta.main) {
           }, {
             color: colors.bold.brightGreen,
             textColor: colors.bold.white,
-            text: "Generating...",
+            text: "Generating",
           });
         } else {
           await runInferenceStream(
