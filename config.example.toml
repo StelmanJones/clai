@@ -5,7 +5,7 @@ alias = "llama2"
 name = "meta-llama/Llama-2-70b-chat-hf"
 template = "[INST] {{input}} [/INST]"
 max_new_tokens = 2000
-max_query_time = 30
+max_inf_time = 30
 
 
 [[model]]
@@ -13,7 +13,7 @@ alias = "falcon"
 name = "tiiuae/falcon-180B-chat"
 template = "### System: You are a helpful assistant. Please answer the user with objective and factual information.\n### User: {{input}}\n### Answer:"
 max_new_tokens = 512
-max_query_time = 30
+max_inf_time = 30
 
 
 [options]

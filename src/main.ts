@@ -4,7 +4,6 @@ import {
   colors,
   Command,
   HfInference,
-  log,
   parseTomlConfig,
   runInference,
   runInferenceStream,
