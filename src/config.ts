@@ -1,7 +1,5 @@
 import { parse, z } from "../deps.ts";
 import * as path from "https://deno.land/std@0.201.0/path/mod.ts";
-import { fromFileUrl } from "https://deno.land/std@0.201.0/path/mod.ts";
-
 export const modelSchema = z.object({
   alias: z.string(),
   name: z.string(),
@@ -9,7 +7,7 @@ export const modelSchema = z.object({
     message: "Your prompt template must contain the {{input}} matcher!",
   }),
   max_new_tokens: z.number().min(100),
-  max_query_time: z.number().min(5).max(120),
+  max_inf_time: z.number().min(5).max(120),
 }).optional();
 
 export type Model = z.infer<typeof modelSchema>;
@@ -63,6 +61,6 @@ export function parseTomlConfig(path: string): ClaiConfig {
   }
   return config;
 }
-export const CONFIG_PATH = fromFileUrl(
+export const CONFIG_PATH = path.fromFileUrl(
   `file://${Deno.env.get("HOME")}/.config/clai/config.toml`,
 );

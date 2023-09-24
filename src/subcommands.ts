@@ -6,8 +6,7 @@ import {
   fileExists,
   parseTomlConfig,
 } from "../deps.ts";
-import { Table } from "../deps.ts";
-import { Row } from "https://deno.land/x/cliffy@v1.0.0-rc.3/table/row.ts";
+import { Row, Table } from "../deps.ts";
 
 const showConfigCmd = new Command()
   .name("show")
@@ -33,7 +32,7 @@ const showConfigCmd = new Command()
             model.name,
             model.template,
             `${model.max_new_tokens}`,
-            `${model.max_query_time}`,
+            `${model.max_inf_time}`,
           ).align("left");
           modelRows.push(r);
         }

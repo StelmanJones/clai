@@ -1,15 +1,17 @@
+import { pipeToGlow } from "./spinners.ts";
 import {
   claiTheme,
   colors,
   Command,
   HfInference,
+  log,
   parseTomlConfig,
   runInference,
   runInferenceStream,
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { pipeToGlow, spinners, withSpinner } from "./spinners.ts";
+import { withSpinner } from "./spinners.ts";
 import { configCmd } from "./subcommands.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 

@@ -1,11 +1,11 @@
 import {
   writeAllSync,
 } from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { colors, HfInference, porcelain, tty } from "../deps.ts";
+import { colors, HfInference, log, porcelain } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
 import { glitch } from "./theme.ts";
-import { rgb24 } from "https://deno.land/std@0.202.0/fmt/colors.ts";
 
+const rgb24 = colors.rgb24;
 export interface SpinnerInterface {
   interval: number;
   frames: string[];
@@ -329,7 +329,7 @@ export const withSpinner = async (
       alias: string;
       name: string;
       max_new_tokens: number;
-      max_query_time: number;
+      max_inf_time: number;
       template: string;
     };
   },
@@ -349,7 +349,6 @@ export const withSpinner = async (
 
   return spinner;
 };
-
 export const pipeToGlow = async (
   // deno-lint-ignore ban-types
   action: Function,
@@ -360,7 +359,7 @@ export const pipeToGlow = async (
       alias: string;
       name: string;
       max_new_tokens: number;
-      max_query_time: number;
+      max_inf_time: number;
       template: string;
     };
   },
@@ -369,26 +368,21 @@ export const pipeToGlow = async (
   const spinner = new Spinner(options).start();
 
   await (async () => {
+    const res = await action(args.input, args.client, args.model);
+
+    // Use Tea to install Glow for markdown rendering.
+    await installGlow();
+    let process: Deno.ChildProcess;
+    const cmd = new Deno.Command("glow", {
+      args: ["-"],
+      stdin: "piped",
+      stdout: "inherit",
+    });
     try {
-      const res = await action(args.input, args.client, args.model);
-
-      // Use Tea to install Glow for markdown rendering.
-      const { run } = porcelain;
-      try {
-        await run("go install github.com/charmbracelet/glow@latest");
-      } catch (e) {
-        spinner.fail(e);
-      }
-
       //Spawn Glow subprocess.
-      const process = new Deno.Command("glow", {
-        args: ["-"],
-        stdin: "piped",
-        stdout: "inherit",
-      }).spawn();
-
       spinner.stop();
-      // Collect glow output.
+      process = cmd.spawn();
+
       const writer = await process.stdin.getWriter();
       writer.write(new TextEncoder().encode(res));
       writer.releaseLock();
@@ -397,7 +391,18 @@ export const pipeToGlow = async (
     } catch (e) {
       spinner.fail(e);
     }
+
+    // Collect glow output.
   })();
 
   return spinner;
 };
+
+async function installGlow() {
+  const { run } = porcelain;
+  try {
+    await run("go install github.com/charmbracelet/glow@latest");
+  } catch (e) {
+    log.error(e);
+  }
+}

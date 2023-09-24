@@ -1,4 +1,4 @@
-import { colors } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts";
+import { colors } from "../deps.ts";
 const highlight = colors.bold.brightMagenta;
 const dimmed = colors.bold.dim;
 const success = colors.green;
@@ -12,6 +12,7 @@ export const claiTheme = {
   warn,
   error,
 };
+
 export function glitch(str: string) {
   const inputLength = str.length;
   const chunkSize = Math.max(1, Math.round(inputLength * 0.02));

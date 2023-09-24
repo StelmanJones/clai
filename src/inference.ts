@@ -1,4 +1,5 @@
-import { colors, HfInference, tty } from "../deps.ts";
+import { colors, HfInference, log, porcelain, tty } from "../deps.ts";
+import Spinner, { Options } from "./spinners.ts";
 
 export async function runInferenceStream(
   input: string,
@@ -7,7 +8,7 @@ export async function runInferenceStream(
     alias: string;
     name: string;
     max_new_tokens: number;
-    max_query_time: number;
+    max_inf_time: number;
     template: string;
   },
 ) {
@@ -17,7 +18,7 @@ export async function runInferenceStream(
       model: model.name,
       inputs: formatted_input,
       parameters: {
-        max_time: model.max_query_time,
+        max_time: model.max_inf_time,
         max_new_tokens: model.max_new_tokens,
         return_full_text: false,
       },
@@ -61,8 +62,10 @@ export function formatPrompt(
   if (md) {
     return template.replace(
       "{{input}}",
-      input.trim() + "Format your response as Markdown.",
+      input.trim() + "Format the response as Markdown.",
     );
   }
   return template.replace("{{input}}", input.trim());
 }
+
+type InputOptions = Partial<Options>;
