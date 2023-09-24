@@ -10,13 +10,12 @@ import {
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { withSpinner } from "./spinners.ts";
 import { configCmd } from "./subcommands.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
 if (import.meta.main) {
   await new Command()
-    .name("CLAI")
+    .name(colors.bold(`CL${colors.dim(`(${colors.green("A")})`)}I`))
     .version("1.2.0")
     .description(
       `Huggingface AI on the command line! \n\nMade by ${
@@ -42,7 +41,6 @@ if (import.meta.main) {
       "The max amount of time generating a response.",
     )
     .option("-d, --debug", "Print debug info and quit.")
-    .option("--md", "Format the response as Markdown.")
     .env(
       "HUGGING=<token:string>",
       "Used to authenticate your inferance requests. You can get your API token at https://huggingface.co/settings/tokens",
@@ -50,7 +48,7 @@ if (import.meta.main) {
     .arguments("<input:string>")
     .action(
       async (
-        { model, tokens, time, debug, md, glow },
+        { model, tokens, time, debug, glow },
         input: string,
       ) => {
         // Inference client
@@ -80,18 +78,7 @@ if (import.meta.main) {
             text: "Generating",
           });
         } // Switch on Markdown flag and run inference.
-        else if (md) {
-          // withSpinner wraps the runInference call in a spinner.
-          await withSpinner(runInference, {
-            input,
-            client: hf,
-            model: selected_model,
-          }, {
-            color: colors.bold.brightGreen,
-            textColor: colors.white,
-            text: "Generating",
-          });
-        } else {
+        else {
           await runInferenceStream(
             input,
             hf,

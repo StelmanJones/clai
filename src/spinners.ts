@@ -87,7 +87,7 @@ export default class Spinner {
   private options: Options = {
     text: "",
     color: colors.white,
-    spinner: Deno.build.os === "windows" ? spinners.windows : spinners.dots,
+    spinner: spinners.dots,
     textColor: colors.white,
     prefixText: "",
     indent: 0,
@@ -126,14 +126,6 @@ export default class Spinner {
     return this;
   }
 
-  public setSpinner(spinner: Spinners) {
-    Object.assign(this.options.spinner, spinners[spinner]);
-    return this;
-  }
-  /**
-   * Starts the spinner
-   * @param text The text to display after the spinner
-   */
   start(text?: string) {
     if (this.spinning) {
       this.stop();
@@ -156,37 +148,6 @@ export default class Spinner {
     }, this.options.spinner.interval);
     return this;
   }
-
-  /**
-   * Stops the spinner and holds it in a static state. Returns the instance.
-   * @param options The options to apply after stopping the spinner
-   */
-  stopAndPersist(options?: InputOptions) {
-    clearLine(this.options.writer, this.textEncoder);
-
-    clearInterval(this.timeoutRef);
-    this.spinning = false;
-    if (options) this.set(options);
-    clearLine(this.options.writer, this.textEncoder);
-
-    return this;
-  }
-
-  /**
-   * Renders the next frame of the spinner when it is stopped.
-   */
-  renderNextFrame() {
-    if (this.spinning) {
-      throw new Error(
-        "You cannot manually render frames when the spinner is running, run stopAndPersist() first.",
-      );
-    }
-    this.currentFrame = (this.currentFrame + 1) %
-      this.options.spinner.frames.length;
-    this.render();
-    return this;
-  }
-
   /**
    * Stops the spinner and clears its line
    */
@@ -257,16 +218,6 @@ export default class Spinner {
   }
 
   /**
-   * Stops the spinner and leaves an information message.
-   *
-   * The function is a wrapper around ```stopWithFlair```.
-   * @param text The message to be shown when stopped
-   */
-  info(text: string = this.options.text) {
-    return this.stopWithFlair(text, colors.bold.blue("i"));
-  }
-
-  /**
    * Returns whether the instance is currently spinning
    */
   isSpinning(): boolean {
@@ -303,8 +254,9 @@ export default class Spinner {
       this.options.writer,
       this.textEncoder,
       this.options.prefixText +
-        this.options.color(
+        colors.rgb24(
           this.options.spinner.frames[this.currentFrame],
+          0xbaf97e,
         ) +
         colors.dim.bold(
           " " +
@@ -372,6 +324,7 @@ export const pipeToGlow = async (
 
     // Use Tea to install Glow for markdown rendering.
     await installGlow();
+
     let process: Deno.ChildProcess;
     const cmd = new Deno.Command("glow", {
       args: ["-"],

@@ -57,9 +57,9 @@ export async function runInference(
 export function formatPrompt(
   input: string,
   template: string,
-  md?: boolean,
+  glow?: boolean,
 ): string {
-  if (md) {
+  if (glow) {
     return template.replace(
       "{{input}}",
       input.trim() + "Format the response as Markdown.",

@@ -2,7 +2,7 @@ import { HfInference } from "../deps.ts";
 import { selectModel } from "./model.ts";
 import { CONFIG_PATH, fileExists, parseTomlConfig } from "./config.ts";
 
-const md = false;
+const glow = false;
 const API_TOKEN = Deno.env.get("HUGGING");
 const debug = false;
 const model = "falcon";
@@ -27,7 +27,7 @@ Deno.bench("Main fn", async function () {
   const selected_model = selectModel(config, model, tokens, time, debug);
 
   // Switch on Markdown flag and run inference.
-  if (md) {
+  if (glow) {
     let i = 0;
   }
 });

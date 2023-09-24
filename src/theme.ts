@@ -24,8 +24,9 @@ export function glitch(str: string) {
     chunks.push(str.substring(i, i + skip).replace(/[^\r\n]/g, " "));
     i += skip;
     if (currentChar && Math.random() > 0.950) {
-      chunks.push(colors.green.bold(
+      chunks.push(colors.bold.rgb24(
         glitchChars[Math.floor(Math.random() * glitchChars.length)],
+        0xb4fa72,
       ));
     } else if (Math.random() > 0.005) {
       chunks.push(currentChar);

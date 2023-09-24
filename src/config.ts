@@ -17,7 +17,7 @@ const configSchema = z.object({
 
   options: z.object({
     default: z.string().optional(),
-    markdown: z.boolean().default(false),
+    glow: z.boolean().default(false),
   }),
 });
 

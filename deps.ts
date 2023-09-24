@@ -1,5 +1,10 @@
 export { parse, stringify } from "https://deno.land/std@0.201.0/toml/mod.ts";
-export { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
+export {
+  Command,
+  CompletionsCommand,
+  HelpCommand,
+  UpgradeCommand,
+} from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 export { tty } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/tty.ts";
 export { colors } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts";
 export { HfInference } from "npm:@huggingface/inference";

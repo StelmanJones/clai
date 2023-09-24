@@ -1,10 +1,8 @@
 {
   "$schema": "https://deno.land/x/deno@v1.36.4/cli/schemas/config-file.v1.json",
   "tasks": {
-    "query": "deno run --allow-env --allow-run=/bin/sh,glow --allow-ffi --allow-run=/usr --allow-net --allow-read --allow-write --unstable ./src/main.ts",
-    "installer": "deno fmt && deno install -f --allow-ffi --allow-env --allow-run=/bin/sh,glow --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
-    "ffi": "go build -o ./build/denogloss.dylib -buildmode=c-shared",
-    "theme": "deno fmt && deno run --allow-run=/bin/sh --allow-run=tar --allow-run=/usr  --allow-env --allow-net --allow-read --allow-write --unstable ./src/theme.ts",
+    "query": "deno run --allow-env --allow-run=/bin/sh,glow   --allow-net --allow-read --allow-write --unstable ./src/main.ts",
+    "installer": "deno fmt && deno install -f  --allow-env --allow-run=/bin/sh,glow --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
     "benchmark": "deno bench --allow-env --allow-net --allow-read --allow-write --unstable ./src/*.bench.ts"
   },
   "fmt": {
@@ -13,5 +11,10 @@
     "useTabs": false,
     "semiColons": true,
     "singleQuote": false
+  },
+  "bench": {
+    "include": [
+      "./src/*.test.ts"
+    ]
   }
 }
