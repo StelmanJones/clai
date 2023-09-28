@@ -1,5 +1,5 @@
-import { colors, HfInference, log, porcelain, tty } from "../deps.ts";
-import Spinner, { Options } from "./spinners.ts";
+import { colors, HfInference, renderMarkdown, tty } from "../deps.ts";
+import { Options } from "./spinners.ts";
 
 export async function runInferenceStream(
   input: string,
@@ -11,6 +11,7 @@ export async function runInferenceStream(
     max_inf_time: number;
     template: string;
   },
+  charmd = false,
 ) {
   const formatted_input = formatPrompt(input, model.template);
   for await (
@@ -27,8 +28,15 @@ export async function runInferenceStream(
     if (output.token.text != null && !output.token.special) {
       tty.text(colors.dim(output.token.text));
     }
+    if (charmd) {
+      if (output.generated_text) {
+        tty.clearScreen();
+        tty.text(renderMarkdown(output.generated_text));
+      }
+    }
   }
 }
+
 export async function runInference(
   input: string,
   client: HfInference,

@@ -1,7 +1,13 @@
 import {
   writeAllSync,
 } from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { colors, HfInference, log, porcelain } from "../deps.ts";
+import {
+  colors,
+  HfInference,
+  log,
+  porcelain,
+  renderMarkdown,
+} from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
 import { glitch } from "./theme.ts";
 
@@ -301,6 +307,37 @@ export const withSpinner = async (
 
   return spinner;
 };
+export const renderWithCharmd = async (
+  // deno-lint-ignore ban-types
+  action: Function,
+  args: {
+    input: string;
+    client: HfInference;
+    model: {
+      alias: string;
+      name: string;
+      max_new_tokens: number;
+      max_inf_time: number;
+      template: string;
+    };
+  },
+  options: InputOptions,
+) => {
+  const spinner = new Spinner(options).start();
+
+  await (
+    async () => {
+      const res = await action(args.input, args.client, args.model);
+
+      spinner.stop();
+      console.log(renderMarkdown(res, { "tableBorder": true }));
+    }
+    // Collect glow output.
+  )();
+
+  return spinner;
+};
+
 export const pipeToGlow = async (
   // deno-lint-ignore ban-types
   action: Function,

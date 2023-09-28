@@ -1,13 +1,21 @@
 import {
+  BoxBuilder,
   ClaiConfig,
   colors,
   Command,
   CONFIG_PATH,
   fileExists,
+  HfInference,
+  keypress,
+  KeyPressEvent,
   log,
   parseTomlConfig,
+  runInference,
+  tty,
 } from "../deps.ts";
 import { Row, Table } from "../deps.ts";
+import { renderWithCharmd } from "./spinners.ts";
+import { selectModel } from "./model.ts";
 let chars = {
   "midMid": colors.dim("╋"),
   "mid": colors.dim("━"),
@@ -94,3 +102,51 @@ export const configCmd = new Command()
     console.log(configCmd.getHelp());
   })
   .command("show", showConfigCmd);
+
+export const chatCmd = new Command()
+  .name("chat")
+  .description("Start an interactive chat session.")
+  .action(async () => {
+    const term = tty({ reader: Deno.stdin, writer: Deno.stdout });
+    term.cursorSave();
+    term.cursorHide();
+
+    let b = new BoxBuilder("Hello World!").setFullscreen(true).setTitle("Chat")
+      .setMargin(2)
+      .build();
+    b.render();
+
+    const k: KeyPressEvent = await keypress();
+    if (k.key === "q") {
+      term.cursorShow();
+      term.cursorRestore();
+      Deno.exit(0);
+    }
+  });
+
+const API_TOKEN = Deno.env.get("HUGGING");
+export const charmdCmd = new Command()
+  .name("charmd")
+  .arguments("<input:string>")
+  .action(async (_, input: string) => {
+    const hf = new HfInference(API_TOKEN);
+
+    //Check config
+    await fileExists(CONFIG_PATH);
+
+    // Parse said config.
+    const config = parseTomlConfig(CONFIG_PATH);
+
+    //Select model based on config and flags.
+    // @ts-ignore Just do it.
+    const selected_model = selectModel(config, model, tokens, time, debug);
+    await renderWithCharmd(runInference, {
+      input,
+      client: hf,
+      model: selected_model,
+    }, {
+      color: colors.bold.green,
+      textColor: colors.white,
+      text: "Generating",
+    });
+  });

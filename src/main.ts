@@ -1,16 +1,17 @@
-import { pipeToGlow } from "./spinners.ts";
+import { pipeToGlow, renderWithCharmd } from "./spinners.ts";
 import {
   claiTheme,
   colors,
   Command,
   HfInference,
+  Model,
   parseTomlConfig,
   runInference,
   runInferenceStream,
 } from "../deps.ts";
 import { CONFIG_PATH, fileExists } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { configCmd } from "./subcommands.ts";
+import { charmdCmd, chatCmd, configCmd } from "./subcommands.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
 if (import.meta.main) {
@@ -40,6 +41,7 @@ if (import.meta.main) {
       "--time [time:integer]",
       "The max amount of time generating a response.",
     )
+    .option("-c, --charmd", "Print with charmd.")
     .option("-d, --debug", "Print debug info and quit.")
     .env(
       "HUGGING=<token:string>",
@@ -48,7 +50,7 @@ if (import.meta.main) {
     .arguments("<input:string>")
     .action(
       async (
-        { model, tokens, time, debug, glow },
+        { model, tokens, time, debug, glow, charmd },
         input: string,
       ) => {
         // Inference client
@@ -64,29 +66,71 @@ if (import.meta.main) {
         }
 
         //Select model based on config and flags.
-        // @ts-ignore Just do it.
-        const selected_model = selectModel(config, model, tokens, time, debug);
+        const selected_model: Model = selectModel(
+          config,
+          // @ts-ignore Just do it.
+          model,
+          tokens,
+          time,
+          debug,
+        );
 
-        if (glow) {
-          await pipeToGlow(runInference, {
-            input,
-            client: hf,
-            model: selected_model,
-          }, {
-            color: colors.bold.green,
-            textColor: colors.white,
-            text: "Generating",
-          });
-        } // Switch on Markdown flag and run inference.
-        else {
-          await runInferenceStream(
-            input,
-            hf,
-            selected_model,
-          );
+        if (glow || charmd) {
+          if (glow) {
+            await pipeToGlow(runInference, {
+              input,
+              client: hf,
+              model: selected_model,
+            }, {
+              color: colors.bold.green,
+              textColor: colors.white,
+              text: "Generating",
+            });
+          } else {
+            await runInferenceStream(
+              input,
+              hf,
+              selected_model,
+              charmd = true,
+            );
+          }
+        } else {
+          switch (config.options.renderer) {
+            case "glow": {
+              await pipeToGlow(runInference, {
+                input,
+                client: hf,
+                model: selected_model,
+              }, {
+                color: colors.bold.green,
+                textColor: colors.white,
+                text: "Generating",
+              });
+              break;
+            }
+
+            case "charmd": {
+              await runInferenceStream(
+                input,
+                hf,
+                selected_model,
+                charmd = true,
+              );
+              break;
+            }
+            case "raw": { // Switch on Markdown flag and run inference.x
+              await runInferenceStream(
+                input,
+                hf,
+                selected_model,
+              );
+            }
+          }
         }
       },
     )
     .command("config", configCmd)
+    .reset()
+    .command("chat", chatCmd)
     .parse(Deno.args);
 }

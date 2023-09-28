@@ -1,5 +1,9 @@
 import { parse, z } from "../deps.ts";
 import * as path from "https://deno.land/std@0.201.0/path/mod.ts";
+
+export const rendererSchema = z.enum(["charmd", "glow", "raw"]).default("raw");
+export type Renderer = z.infer<typeof rendererSchema>;
+
 export const modelSchema = z.object({
   alias: z.string(),
   name: z.string(),
@@ -17,7 +21,7 @@ const configSchema = z.object({
 
   options: z.object({
     default: z.string().optional(),
-    glow: z.boolean().default(false),
+    renderer: rendererSchema,
   }),
 });
 
@@ -37,7 +41,7 @@ export async function fileExists(
       });
       await Deno.writeTextFile(
         filepath,
-        "[options]\n\nmarkdown=false",
+        "[options]\n\nglow=false",
       );
     }
   }
