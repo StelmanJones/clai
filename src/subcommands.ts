@@ -56,9 +56,9 @@ const showConfigCmd = new Command()
           colors.bold.rgb24("Value", 0xbaf97e),
         ]),
       )
-      .body([["default", config.options.default || ""], [
-        "glow",
-        `${config.options.glow || ""}`,
+      .body([["Default", config.options.default || ""], [
+        "Renderer",
+        `${config.options.renderer || ""}`,
       ]])
       .border(true)
       .chars(getBorder()).render();
@@ -125,28 +125,3 @@ export const chatCmd = new Command()
   });
 
 const API_TOKEN = Deno.env.get("HUGGING");
-export const charmdCmd = new Command()
-  .name("charmd")
-  .arguments("<input:string>")
-  .action(async (_, input: string) => {
-    const hf = new HfInference(API_TOKEN);
-
-    //Check config
-    await fileExists(CONFIG_PATH);
-
-    // Parse said config.
-    const config = parseTomlConfig(CONFIG_PATH);
-
-    //Select model based on config and flags.
-    // @ts-ignore Just do it.
-    const selected_model = selectModel(config, model, tokens, time, debug);
-    await renderWithCharmd(runInference, {
-      input,
-      client: hf,
-      model: selected_model,
-    }, {
-      color: colors.bold.green,
-      textColor: colors.white,
-      text: "Generating",
-    });
-  });

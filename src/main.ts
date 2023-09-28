@@ -1,4 +1,4 @@
-import { pipeToGlow, renderWithCharmd } from "./spinners.ts";
+import { pipeToGlow } from "./spinners.ts";
 import {
   claiTheme,
   colors,
@@ -9,25 +9,36 @@ import {
   runInference,
   runInferenceStream,
 } from "../deps.ts";
-import { CONFIG_PATH, fileExists } from "./config.ts";
+import { CONFIG_PATH, fileExists, renderers, RendererType } from "./config.ts";
 import { selectModel } from "./model.ts";
-import { charmdCmd, chatCmd, configCmd } from "./subcommands.ts";
+import { chatCmd, configCmd } from "./subcommands.ts";
+import { highlightGreen } from "./theme.ts";
 const API_TOKEN = Deno.env.get("HUGGING");
 
 if (import.meta.main) {
   await new Command()
+    .type("renderers", new RendererType())
+    .example(
+      "Renderers",
+      `
+    ${highlightGreen("charmd")} ${
+        colors.bold.dim("(https://deno.land/x/charmd)")
+      }
+    ${highlightGreen("glow")} ${
+        colors.bold.dim("(https://github.com/charmbracelet/glow)")
+      }
+    `,
+    )
     .name(colors.bold(`CL${colors.dim(`(${colors.green("A")})`)}I`))
-    .version("1.2.0")
+    .version("1.3.0")
     .description(
       `Huggingface AI on the command line! \n\nMade by ${
         claiTheme.highlight("StelmanJones")
       }. ${claiTheme.dimmed("(https://github.com/StelmanJones)")}`,
     )
     .option(
-      "-g, --glow",
-      `Pipe the output to glow ${
-        colors.dim.bold("(https://github.com/charmbracelet/glow)")
-      }`,
+      "-r, --renderer [renderer:renderers]",
+      "Select the renderer to use.",
     )
     .option(
       "-m, --model [model:string]",
@@ -41,7 +52,6 @@ if (import.meta.main) {
       "--time [time:integer]",
       "The max amount of time generating a response.",
     )
-    .option("-c, --charmd", "Print with charmd.")
     .option("-d, --debug", "Print debug info and quit.")
     .env(
       "HUGGING=<token:string>",
@@ -50,7 +60,7 @@ if (import.meta.main) {
     .arguments("<input:string>")
     .action(
       async (
-        { model, tokens, time, debug, glow, charmd },
+        { model, tokens, time, debug, renderer },
         input: string,
       ) => {
         // Inference client
@@ -75,24 +85,36 @@ if (import.meta.main) {
           debug,
         );
 
-        if (glow || charmd) {
-          if (glow) {
-            await pipeToGlow(runInference, {
-              input,
-              client: hf,
-              model: selected_model,
-            }, {
-              color: colors.bold.green,
-              textColor: colors.white,
-              text: "Generating",
-            });
-          } else {
-            await runInferenceStream(
-              input,
-              hf,
-              selected_model,
-              charmd = true,
-            );
+        if (renderer) {
+          switch (renderer) {
+            case "glow": {
+              await pipeToGlow(runInference, {
+                input,
+                client: hf,
+                model: selected_model,
+              }, {
+                color: colors.bold.green,
+                textColor: colors.white,
+                text: "Generating",
+              });
+              break;
+            }
+            case "charmd": {
+              await runInferenceStream(
+                input,
+                hf,
+                selected_model,
+                true,
+              );
+              break;
+            }
+            case "raw": {
+              await runInferenceStream(
+                input,
+                hf,
+                selected_model,
+              );
+            }
           }
         } else {
           switch (config.options.renderer) {
@@ -114,7 +136,7 @@ if (import.meta.main) {
                 input,
                 hf,
                 selected_model,
-                charmd = true,
+                true,
               );
               break;
             }

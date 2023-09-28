@@ -12,7 +12,9 @@ export const claiTheme = {
   warn,
   error,
 };
-
+export function highlightGreen(s: string): string {
+  return colors.bold.rgb24(s, 0xb4fa72);
+}
 export function glitch(str: string) {
   const inputLength = str.length;
   const chunkSize = Math.max(1, Math.round(inputLength * 0.02));

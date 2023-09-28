@@ -1,9 +1,41 @@
-import { parse, z } from "../deps.ts";
+import { colors, parse, z } from "../deps.ts";
 import * as path from "https://deno.land/std@0.201.0/path/mod.ts";
+import {
+  ArgumentValue,
+  EnumType,
+  Type,
+  ValidationError,
+} from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 
+const renderer_values = ["charmd", "glow", "raw"];
+
+export const renderers = new EnumType(renderer_values);
+export class RendererType extends Type<string> {
+  private readonly renderers = ["charmd", "glow", "raw"];
+  values(): Array<string> {
+    return [
+      `charmd`,
+      `glow`,
+      "raw",
+    ];
+  }
+
+  public parse({ label, name, value }: ArgumentValue): string {
+    if (!this.renderers.includes(value)) {
+      throw new ValidationError(
+        `${label} "${name}" must be a valid color, but got "${value}". Possible values are: ${
+          this.renderers.join(", ")
+        }`,
+      );
+    }
+    return value;
+  }
+
+  complete(): Array<string> {
+    return this.renderers;
+  }
+}
 export const rendererSchema = z.enum(["charmd", "glow", "raw"]).default("raw");
-export type Renderer = z.infer<typeof rendererSchema>;
-
 export const modelSchema = z.object({
   alias: z.string(),
   name: z.string(),
