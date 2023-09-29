@@ -9,7 +9,7 @@ import {
   runInference,
   runInferenceStream,
 } from "../deps.ts";
-import { CONFIG_PATH, fileExists, renderers, RendererType } from "./config.ts";
+import { CONFIG_PATH, fileExists, RendererType } from "./config.ts";
 import { selectModel } from "./model.ts";
 import { chatCmd, configCmd } from "./subcommands.ts";
 import { highlightGreen } from "./theme.ts";
@@ -152,6 +152,7 @@ if (import.meta.main) {
       },
     )
     .command("config", configCmd)
+    .description("Configuration related commands.")
     .reset()
     .command("chat", chatCmd)
     .parse(Deno.args);

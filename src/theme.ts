@@ -31,7 +31,7 @@ export function glitch(str: string) {
         0xb4fa72,
       ));
     } else if (Math.random() > 0.005) {
-      chunks.push(currentChar);
+      chunks.push(colors.bold.dim(currentChar));
     }
   }
 

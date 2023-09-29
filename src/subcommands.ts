@@ -5,17 +5,14 @@ import {
   Command,
   CONFIG_PATH,
   fileExists,
-  HfInference,
   keypress,
   KeyPressEvent,
   log,
   parseTomlConfig,
-  runInference,
   tty,
 } from "../deps.ts";
 import { Row, Table } from "../deps.ts";
-import { renderWithCharmd } from "./spinners.ts";
-import { selectModel } from "./model.ts";
+import { highlightGreen } from "./theme.ts";
 let chars = {
   "midMid": colors.dim("╋"),
   "mid": colors.dim("━"),
@@ -52,8 +49,8 @@ const showConfigCmd = new Command()
     const _ = new Table()
       .header(
         Row.from([
-          colors.bold.rgb24("Option", 0xbaf97e),
-          colors.bold.rgb24("Value", 0xbaf97e),
+          highlightGreen("Option"),
+          highlightGreen("Value"),
         ]),
       )
       .body([["Default", config.options.default || ""], [
@@ -82,11 +79,11 @@ const showConfigCmd = new Command()
     const _models = new Table()
       .header(
         Row.from([
-          colors.bold.rgb24("Alias", 0xbaf97e),
-          colors.bold.rgb24("Name", 0xbaf97e),
-          colors.bold.rgb24("Template", 0xbaf97e),
-          colors.bold.rgb24("Max New Tokens", 0xbaf97e),
-          colors.bold.rgb24("Max Time", 0xbaf97e),
+          highlightGreen("Alias"),
+          highlightGreen("Name"),
+          highlightGreen("Template"),
+          highlightGreen("Max New Tokens"),
+          highlightGreen("Max Time"),
         ])
           .align("center"),
       )

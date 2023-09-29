@@ -9,7 +9,7 @@ import {
   renderMarkdown,
 } from "../deps.ts";
 import * as stdColors from "https://deno.land/std@0.122.0/fmt/colors.ts";
-import { glitch } from "./theme.ts";
+import { glitch, highlightGreen } from "./theme.ts";
 
 const rgb24 = colors.rgb24;
 export interface SpinnerInterface {
@@ -260,15 +260,12 @@ export default class Spinner {
       this.options.writer,
       this.textEncoder,
       this.options.prefixText +
-        colors.rgb24(
+        highlightGreen(
           this.options.spinner.frames[this.currentFrame],
-          0xbaf97e,
         ) +
-        colors.dim.bold(
-          " " +
-            glitch(this.options.text) +
-            dots(this.dotCount),
-        ),
+        " " +
+        glitch(this.options.text) +
+        dots(this.dotCount),
       this.options.indent,
     );
   }
@@ -304,36 +301,6 @@ export const withSpinner = async (
       spinner.fail(e);
     }
   })();
-
-  return spinner;
-};
-export const renderWithCharmd = async (
-  // deno-lint-ignore ban-types
-  action: Function,
-  args: {
-    input: string;
-    client: HfInference;
-    model: {
-      alias: string;
-      name: string;
-      max_new_tokens: number;
-      max_inf_time: number;
-      template: string;
-    };
-  },
-  options: InputOptions,
-) => {
-  const spinner = new Spinner(options).start();
-
-  await (
-    async () => {
-      const res = await action(args.input, args.client, args.model);
-
-      spinner.stop();
-      console.log(renderMarkdown(res, { "tableBorder": true }));
-    }
-    // Collect glow output.
-  )();
 
   return spinner;
 };
