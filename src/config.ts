@@ -1,4 +1,4 @@
-import {  match, parse, z } from "../deps.ts";
+import { match, parse, z } from "../deps.ts";
 import * as path from "https://deno.land/std@0.201.0/path/mod.ts";
 import {
   ArgumentValue,

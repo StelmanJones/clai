@@ -4,6 +4,7 @@
 alias = "llama2"
 name = "meta-llama/Llama-2-70b-chat-hf"
 template = "[INST] {{input}} [/INST]"
+[model.params]
 max_new_tokens = 2000
 max_inf_time = 30
 
@@ -11,11 +12,17 @@ max_inf_time = 30
 [[model]]
 alias = "falcon"
 name = "tiiuae/falcon-180B-chat"
-template = "### System: You are a helpful assistant. Please answer the user with objective and factual information.\n### User: {{input}}\n### Answer:"
+template = "### System: You are a helpful assistant. Please answer the user with objective and factual information.\n### User: {{input}}\n### Falcon:"
+[model.params]
 max_new_tokens = 512
 max_inf_time = 30
+do_sample=false
+num_return_sequences=1
+return_full_text=false
+temperature=1.0
+
 
 
 [options]
 default = "falcon"
-markdown = false
+renderer = "charmd"

@@ -144,4 +144,3 @@ export const chatCmd = new Command()
       Deno.exit(0);
     }
   });
-
