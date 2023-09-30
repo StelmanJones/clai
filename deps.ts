@@ -13,10 +13,11 @@ export { z } from "npm:zod";
 export {
   type ClaiConfig,
   type Model,
-  modelSchema,
+  ModelSchema,
   parseTomlConfig,
 } from "./src/config.ts";
 export * as log from "https://deno.land/std@0.201.0/log/mod.ts";
+export type { LogConfig } from "https://deno.land/std@0.201.0/log/mod.ts";
 export { CONFIG_PATH, fileExists } from "./src/config.ts";
 export { runInference, runInferenceStream } from "./src/inference.ts";
 export { mergeReadableStreams } from "https://deno.land/std@0.201.0/streams/merge_readable_streams.ts";
@@ -42,3 +43,4 @@ export {
   KeyPressEvent,
 } from "https://deno.land/x/cliffy@v1.0.0-rc.3/keypress/mod.ts";
 export { renderMarkdown } from "https://deno.land/x/charmd@v0.0.2/mod.ts";
+export { match } from "npm:ts-pattern";

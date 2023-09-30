@@ -1,8 +1,9 @@
 {
   "$schema": "https://deno.land/x/deno@v1.36.4/cli/schemas/config-file.v1.json",
   "tasks": {
-    "query": "deno run --allow-env --allow-run=/bin/sh,glow   --allow-net --allow-read --allow-write --unstable ./src/main.ts",
-    "installer": "deno fmt && deno install -f  --allow-env --allow-run=/bin/sh,glow --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
+    "query": "deno run --allow-env --allow-run=/bin/sh,glow,nvim   --allow-net --allow-read --allow-write --unstable ./src/main.ts",
+    "installer": "deno fmt && deno install -f  --allow-env --allow-run=/bin/sh,glow,nvim --allow-net --allow-read --allow-write --unstable ./src/main.ts --name clai",
+    "installUnsafe": "deno fmt && deno install -f -A --unstable ./src/main.ts --name clai",
     "benchmark": "deno bench --allow-env --allow-net --allow-read --allow-write --unstable ./src/*.bench.ts"
   },
   "fmt": {

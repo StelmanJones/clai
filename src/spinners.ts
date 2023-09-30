@@ -284,7 +284,7 @@ export const withSpinner = async (
       alias: string;
       name: string;
       max_new_tokens: number;
-      max_inf_time: number;
+      max_time: number;
       template: string;
     };
   },
@@ -315,7 +315,7 @@ export const pipeToGlow = async (
       alias: string;
       name: string;
       max_new_tokens: number;
-      max_inf_time: number;
+      max_time: number;
       template: string;
     };
   },
@@ -355,7 +355,7 @@ export const pipeToGlow = async (
   return spinner;
 };
 
-async function installGlow() {
+export async function installGlow() {
   const { run } = porcelain;
   try {
     await run("go install github.com/charmbracelet/glow@latest");

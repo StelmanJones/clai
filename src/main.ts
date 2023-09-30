@@ -1,15 +1,19 @@
-import { pipeToGlow } from "./spinners.ts";
 import {
   claiTheme,
   colors,
   Command,
   HfInference,
+  log,
   Model,
   parseTomlConfig,
-  runInference,
   runInferenceStream,
 } from "../deps.ts";
-import { CONFIG_PATH, fileExists, RendererType } from "./config.ts";
+import {
+  CONFIG_PATH,
+  fileExists,
+  isDebugEnabled,
+  RendererType,
+} from "./config.ts";
 import { selectModel } from "./model.ts";
 import { chatCmd, configCmd } from "./subcommands.ts";
 import { highlightGreen } from "./theme.ts";
@@ -71,8 +75,8 @@ if (import.meta.main) {
 
         // Parse said config.
         const config = parseTomlConfig(CONFIG_PATH);
-        if (debug) {
-          console.log(config);
+        if (isDebugEnabled()) {
+          log.info(config);
         }
 
         //Select model based on config and flags.
@@ -86,68 +90,14 @@ if (import.meta.main) {
         );
 
         if (renderer) {
-          switch (renderer) {
-            case "glow": {
-              await pipeToGlow(runInference, {
-                input,
-                client: hf,
-                model: selected_model,
-              }, {
-                color: colors.bold.green,
-                textColor: colors.white,
-                text: "Generating",
-              });
-              break;
-            }
-            case "charmd": {
-              await runInferenceStream(
-                input,
-                hf,
-                selected_model,
-                true,
-              );
-              break;
-            }
-            case "raw": {
-              await runInferenceStream(
-                input,
-                hf,
-                selected_model,
-              );
-            }
-          }
+          await runInferenceStream(input, hf, selected_model, renderer);
         } else {
-          switch (config.options.renderer) {
-            case "glow": {
-              await pipeToGlow(runInference, {
-                input,
-                client: hf,
-                model: selected_model,
-              }, {
-                color: colors.bold.green,
-                textColor: colors.white,
-                text: "Generating",
-              });
-              break;
-            }
-
-            case "charmd": {
-              await runInferenceStream(
-                input,
-                hf,
-                selected_model,
-                true,
-              );
-              break;
-            }
-            case "raw": { // Switch on Markdown flag and run inference.x
-              await runInferenceStream(
-                input,
-                hf,
-                selected_model,
-              );
-            }
-          }
+          await runInferenceStream(
+            input,
+            hf,
+            selected_model,
+            config.options.renderer,
+          );
         }
       },
     )

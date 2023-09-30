@@ -1,37 +1,47 @@
-import { colors, HfInference, renderMarkdown, tty } from "../deps.ts";
-import { Options } from "./spinners.ts";
+import {
+  colors,
+  HfInference,
+  type Model,
+  renderMarkdown,
+  tty,
+} from "../deps.ts";
+import { installGlow, Options } from "./spinners.ts";
 
 export async function runInferenceStream(
   input: string,
   client: HfInference,
-  model: {
-    alias: string;
-    name: string;
-    max_new_tokens: number;
-    max_inf_time: number;
-    template: string;
-  },
-  charmd = false,
+  model: Model,
+  renderer: string | true,
 ) {
   const formatted_input = formatPrompt(input, model.template);
   for await (
     const output of client.textGenerationStream({
       model: model.name,
       inputs: formatted_input,
-      parameters: {
-        max_time: model.max_inf_time,
-        max_new_tokens: model.max_new_tokens,
-        return_full_text: false,
-      },
+      parameters: model.params,
     }, { wait_for_model: true, use_cache: false })
   ) {
     if (output.token.text != null && !output.token.special) {
       tty.text(colors.dim(output.token.text));
     }
-    if (charmd) {
-      if (output.generated_text) {
-        tty.clearScreen();
-        tty.text(renderMarkdown(output.generated_text));
+    switch (renderer) {
+      case "charmd":
+        {
+          if (output.generated_text) {
+            tty.clearScreen();
+            tty.text(renderMarkdown(output.generated_text));
+          }
+        }
+        break;
+      case "glow": {
+        if (output.generated_text) {
+          tty.clearScreen();
+          await renderWithGlow(output.generated_text);
+        }
+        break;
+      }
+      default: {
+        break;
       }
     }
   }
@@ -40,26 +50,39 @@ export async function runInferenceStream(
 export async function runInference(
   input: string,
   client: HfInference,
-  model: {
-    alias: string;
-    name: string;
-    max_new_tokens: number;
-    max_query_time: number;
-    template: string;
-  },
+  model: Model,
 ) {
   const formatted_input = formatPrompt(input, model.template, true);
 
   const res = await client.textGeneration({
     model: model.name,
     inputs: formatted_input,
-    parameters: {
-      max_time: model.max_query_time,
-      max_new_tokens: model.max_new_tokens,
-      return_full_text: false,
-    },
+    parameters: model.params,
   }, { wait_for_model: true, use_cache: false });
   return res.generated_text;
+}
+
+export async function renderWithGlow(t: string) {
+  await installGlow();
+
+  let process: Deno.ChildProcess;
+  const cmd = new Deno.Command("glow", {
+    args: ["-"],
+    stdin: "piped",
+    stdout: "inherit",
+  });
+  try {
+    //Spawn Glow subprocess.
+    process = cmd.spawn();
+
+    const writer = await process.stdin.getWriter();
+    writer.write(new TextEncoder().encode(t));
+    writer.releaseLock();
+    await process.stdin.close();
+    await process.output();
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export function formatPrompt(

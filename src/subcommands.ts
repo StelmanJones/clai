@@ -12,8 +12,9 @@ import {
   tty,
 } from "../deps.ts";
 import { Row, Table } from "../deps.ts";
+import { isDebugEnabled } from "./config.ts";
 import { highlightGreen } from "./theme.ts";
-let chars = {
+const chars = {
   "midMid": colors.dim("╋"),
   "mid": colors.dim("━"),
   "middle": colors.dim("┃"),
@@ -68,8 +69,8 @@ const showConfigCmd = new Command()
             model.alias,
             model.name,
             model.template,
-            `${model.max_new_tokens}`,
-            `${model.max_inf_time}`,
+            `${model.params.max_new_tokens}`,
+            `${model.params.max_time}`,
           ).align("left");
           modelRows.push(r);
         }
@@ -93,12 +94,33 @@ const showConfigCmd = new Command()
       .chars(getBorder())
       .render();
   });
+
+export const editConfigCmd = new Command()
+  .name("edit")
+  .description("Edit the config file.")
+  .action(async () => {
+    const editor = Deno.env.get("EDITOR") || "nano";
+    const path = CONFIG_PATH;
+    const editorCmd = new Deno.Command(editor, { args: [path] });
+    if (isDebugEnabled()) {
+      log.info("Command: " + editor + " " + path);
+    }
+
+    const process = await editorCmd.spawn();
+    const status = await process.status;
+    if (isDebugEnabled()) {
+      log.info(colors.bold.yellow("Status Code: ") + status.code);
+      log.info(colors.yellow.bold("Succeeded: " + status.success));
+    }
+  });
 export const configCmd = new Command()
   .name("config")
   .action(() => {
     console.log(configCmd.getHelp());
   })
-  .command("show", showConfigCmd);
+  .command("show", showConfigCmd)
+  .reset()
+  .command("edit", editConfigCmd);
 
 export const chatCmd = new Command()
   .name("chat")
@@ -108,7 +130,9 @@ export const chatCmd = new Command()
     term.cursorSave();
     term.cursorHide();
 
-    let b = new BoxBuilder("Hello World!").setFullscreen(true).setTitle("Chat")
+    const b = new BoxBuilder("Hello World!").setFullscreen(true).setTitle(
+      "Chat",
+    )
       .setMargin(2)
       .build();
     b.render();
@@ -121,4 +145,3 @@ export const chatCmd = new Command()
     }
   });
 
-const API_TOKEN = Deno.env.get("HUGGING");
