@@ -1,4 +1,3 @@
-import { toPathString } from "https://deno.land/std@0.196.0/fs/_util.ts";
 import {
   claiTheme,
   colors,
@@ -36,7 +35,7 @@ if (import.meta.main) {
     `,
     )
     .name("clai")
-    .version("1.3.0")
+    .version("1.3.1")
     .description(
       `Huggingface AI on the command line! \n\nMade by ${
         claiTheme.highlight("StelmanJones")
@@ -45,7 +44,7 @@ if (import.meta.main) {
     .arguments("<input:string>")
     .option(
       "-r, --renderer [renderer:renderers]",
-      "Select the renderer to use.",
+      "Select the renderer to use. \n",
     )
     .option(
       "-m, --model [model:string]",
@@ -72,7 +71,8 @@ if (import.meta.main) {
     )
     .option(
       "-tk, --topk [topk:integer]",
-      `The number of highest probability vocabulary tokens to keep for filtering.`,
+      `The number of highest probability vocabulary
+            tokens to keep for filtering.`,
     )
     .option(
       "-tp, --topp [topp:number]",

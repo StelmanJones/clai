@@ -15,7 +15,7 @@ export type ClaiConfig = z.infer<typeof ConfigSchema>;
 
 export class RendererType extends Type<string> {
   private readonly renderers = ["charmd", "glow", "raw"];
-  values(): Array<string> {
+  values(): string[] {
     return [
       `charmd`,
       `glow`,
@@ -26,7 +26,7 @@ export class RendererType extends Type<string> {
   public parse({ label, name, value }: ArgumentValue): string {
     if (!this.renderers.includes(value)) {
       throw new ValidationError(
-        `${label} "${name}" must be a valid color, but got "${value}". Possible values are: ${
+        `${label} "${name}" must be a valid renderer, but got "${value}". Possible values are: ${
           this.renderers.join(", ")
         }`,
       );
@@ -34,7 +34,7 @@ export class RendererType extends Type<string> {
     return value;
   }
 
-  complete(): Array<string> {
+  public complete(): string[] {
     return this.renderers;
   }
 }
