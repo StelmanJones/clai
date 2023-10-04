@@ -1,5 +1,4 @@
 import {
-  BoxBuilder,
   ClaiConfig,
   colors,
   Command,
@@ -121,26 +120,3 @@ export const configCmd = new Command()
   .command("show", showConfigCmd)
   .reset()
   .command("edit", editConfigCmd);
-
-export const chatCmd = new Command()
-  .name("chat")
-  .description("Start an interactive chat session.")
-  .action(async () => {
-    const term = tty({ reader: Deno.stdin, writer: Deno.stdout });
-    term.cursorSave();
-    term.cursorHide();
-
-    const b = new BoxBuilder("Hello World!").setFullscreen(true).setTitle(
-      "Chat",
-    )
-      .setMargin(2)
-      .build();
-    b.render();
-
-    const k: KeyPressEvent = await keypress();
-    if (k.key === "q") {
-      term.cursorShow();
-      term.cursorRestore();
-      Deno.exit(0);
-    }
-  });

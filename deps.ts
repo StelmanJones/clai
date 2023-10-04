@@ -8,7 +8,6 @@ export {
 export { tty } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/tty.ts";
 export { colors } from "https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts";
 export { HfInference } from "npm:@huggingface/inference";
-export { snapshotTest } from "https://deno.land/x/cliffy@v1.0.0-rc.3/testing/mod.ts";
 export { z } from "npm:zod";
 export {
   type ClaiConfig,
@@ -37,7 +36,6 @@ export {
   dirname,
   fromFileUrl,
 } from "https://deno.land/std@0.201.0/path/mod.ts";
-export { Box, BoxBuilder, type BoxStyle } from "./src/boxes.ts";
 export {
   keypress,
   KeyPressEvent,

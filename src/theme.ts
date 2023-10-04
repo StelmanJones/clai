@@ -12,6 +12,12 @@ export const claiTheme = {
   warn,
   error,
 };
+
+export function rangeTooltip(min: number, max: number): string {
+  return colors.bold.dim("(min: ") +
+    colors.reset(highlightGreen(min.toString())) + colors.bold.dim(", max: ") +
+    colors.reset(highlightGreen(max.toString())) + colors.reset.dim.bold(")");
+}
 export function highlightGreen(s: string): string {
   return colors.bold.rgb24(s, 0xb4fa72);
 }
